@@ -6,20 +6,13 @@ import csv
 import sys
 from collections import Counter
 
+
+def remove_values_from_list(the_list, val):
+   return [value for value in the_list if value != val]
+
 reader=csv.reader(open("train.csv"),delimiter=' ')
-review_list =[]
-#print(reader)
-x=list(reader)
-result=numpy.array(x)
-for row in reader:
-    print(row[0])
-    #review_list.append(row[0])
 
-
-#print(review_list)
-
-#traindata = loadtxt('train.csv',usecols=range(1),dtype=str)
-
+#read csv files
 f = open('train.csv')
 csv_f = csv.reader(f)
 review_list =[]
@@ -27,12 +20,11 @@ list_word=[]
 all_word=[]
 
 for row in csv_f:
-#    review_list.append([x.strip() for x in row.split(',')])
     if row[0].split(' ') not in review_list and row[0].split(' ') != ',':
         review_list.append(row[0].split(' '))
-print(review_list[0][1])
+
+print(review_list[0])
 print(review_list.__len__())
-#for row in review_list:
 for i in range(review_list.__len__()):
     for column in review_list[i]:
         if column != ',' and column != '.' and column !=''and column !='!'and column !='...' :
@@ -40,22 +32,27 @@ for i in range(review_list.__len__()):
             if column not in list_word:
                 list_word.append(column)
 
-print(list_word.__len__())
+
 print(all_word.__len__())
+ad_list=remove_values_from_list(all_word,'a')
+print(list_word.__len__())
+print(all_word.count('a'))
+print(ad_list.__len__())
+
+"""
 for word in all_word:
-    if all_word.count(word)>1000:
-        all_word.remove(word)
-        list_word.remove(word)
+    if all_word.count(word)>500:
+        print(word,all_word.count(word))
+        all_word=remove_values_from_list(all_word,word)
 
+"""
 
-print(list_word.__len__())
-print(all_word.__len__())
+#if review_list[0][1] == 'messages':
+#    print('cool')
+#print(list_word.count("a"))
 
-if review_list[0][1] == 'messages':
-    print('cool')
-print(list_word.count("a"))
-
-
+c= Counter(all_word).most_common(100)
+print (c)
 
 
 
