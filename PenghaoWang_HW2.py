@@ -27,7 +27,8 @@ print(review_list[0])
 print(review_list.__len__())
 for i in range(review_list.__len__()):
     for column in review_list[i]:
-        if column != ',' and column != '.' and column !=''and column !='!'and column !='...' :
+        if column != ',' and column != '.' and column !=''and column !='!'and column !='...'and column !='(' and column !=')'and column !='"'and column !='--'and column !='?' \
+                and column !=';'and column !=':':
             all_word.append(column)
             al_w.add(column)
             #if column not in list_word2:
@@ -47,11 +48,14 @@ print(list_word.__len__())
 #print(ad_list.__len__())
 
 
-c= Counter(all_word).most_common(100)
-c1=c[1]
-print (c1[0])
+c= Counter(all_word).most_common(list_word.__len__())
+#common_most= Counter(all_word).most_common(50)
+#c1=common_most
+#print (c1[0])
 
 for elements in c:
     removestr = elements
-    print (removestr)
+    if removestr[1]<5 or removestr[1]>300:
+        list_word.remove(removestr[0])
 
+print(list_word.__len__())
