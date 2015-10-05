@@ -182,12 +182,12 @@ def calTrainError(filename,list_word,w,condition):
     return(count)
 
 review_list,review_label = cal_reviewlistlabel('train.csv')
-#print(review_list[0])
+print(review_list[0])
 #print(calListbiWord(review_list).__len__())
 
 list_uniWord = calListuniWord(review_list)
 feature_array = cal_feature_array(review_list,list_uniWord)
-w10=perceptron(1000,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
+w10=perceptron(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
 print(w10)
 
 print(calTrainError('train.csv',list_uniWord,w10,1))
@@ -196,7 +196,7 @@ print(calTrainError('validation.csv',list_uniWord,w10,1))
 list_biWord = calListbiWord(review_list)
 #print(list_biWord)
 
-w_bi_10 = perceptron(1000,review_list,review_label,list_biWord,cal_bifeature_array(review_list,list_biWord))
+w_bi_10 = perceptron(10,review_list,review_label,list_biWord,cal_bifeature_array(review_list,list_biWord))
 print(w_bi_10)
 
 print(calTrainError('train.csv',list_biWord,w_bi_10,2))
