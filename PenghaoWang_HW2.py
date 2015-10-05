@@ -76,7 +76,7 @@ def cal_feature_array(review_list,list_word):
             if words in list_word:
                 index =list_word.index(words)
                 x[index] = 1
-            feature_array[idx] = np.array(x,dtype=float)
+                feature_array[idx] = np.array(x,dtype=float)
     return feature_array
 
 def cal_bifeature_array(review_list,list_word):
@@ -90,7 +90,7 @@ def cal_bifeature_array(review_list,list_word):
                 if biwords in list_word:
                     index =list_word.index(biwords)
                     x[index] = 1
-            feature_array[idx] = np.array(x,dtype=float)
+                    feature_array[idx] = np.array(x,dtype=float)
     return feature_array
 
 def cal_both_feature_array(review_list,list_word):
@@ -186,7 +186,7 @@ print(review_list[0])
 #print(calListbiWord(review_list).__len__())
 
 list_uniWord = calListuniWord(review_list)
-feature_array = cal_feature_array(review_list,list_uniWord)
+#feature_array = cal_feature_array(review_list,list_uniWord)
 w10=perceptron(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
 print(w10)
 
