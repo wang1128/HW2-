@@ -119,7 +119,7 @@ def perceptron(maxIter,review_list,review_label,list_word,feature_array):
         w_copy = w
         random_idx = np.random.permutation(review_list.__len__())
         for row_idx in random_idx:
-            y = np.dot(w,feature_array[row_idx]) + b
+            y = predict_one_p(w,feature_array[row_idx])
             if y>0:
                 predict_label = 1
             else:
@@ -213,6 +213,10 @@ def calRecall_p(filename,list_word,w,condition):
 def calFscore(precision,recall):
     return 2*(precision*recall)/(precision+recall)
 
+def predict_one_p(w,input_snippet ):
+    b = 0
+    y = np.dot(w,input_snippet) + b
+    return y
 
 def calTrainError_p(filename,list_word,w,condition):
     vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
@@ -225,7 +229,7 @@ def calTrainError_p(filename,list_word,w,condition):
     b=0
     count=0
     for idx in range(vreviewlist.__len__()):
-        y = np.dot(w,vfeatureArray[idx]) + b
+        y = predict_one_p(w,vfeatureArray[idx])
         if y>0:
             predict_label = 1
         else:
@@ -236,14 +240,8 @@ def calTrainError_p(filename,list_word,w,condition):
 
     return(count)
 
-review_list,review_label = cal_reviewlistlabel('train.csv')
+def calaprf(w,filename,review_list,review_label,list_word):
 
-#print(calListbiWord(review_list).__len__())
-
-list_uniWord = calListuniWord(review_list)
-def calaprf(maxIter,filename,review_list,review_label,list_word):
-    w=perceptron(maxIter,review_list,review_label,list_word,cal_feature_array(review_list,list_word))
-    print(w)
     print(calTrainError_p(filename,list_word,w,1))
     precision_uni_train =calPrecsion_p(filename,list_word,w,1)
     print(precision_uni_train)
@@ -251,6 +249,18 @@ def calaprf(maxIter,filename,review_list,review_label,list_word):
     print(recall_uni_train)
     fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
     print(fscore_uni_train)
+review_list,review_label = cal_reviewlistlabel('train.csv')
+
+#print(calListbiWord(review_list).__len__())
+
+list_uniWord = calListuniWord(review_list)
+w=perceptron(100,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
+print(w)
+
+calaprf(w,'train.csv',review_list,review_label,list_uniWord)
+calaprf(w,'validation.csv',review_list,review_label,list_uniWord)
+calaprf(w,'test.csv',review_list,review_label,list_uniWord)
+
 
 '''
 print(calTrainError_p('validation.csv',list_uniWord,w10,1))
