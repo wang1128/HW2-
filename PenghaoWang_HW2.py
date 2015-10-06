@@ -135,30 +135,38 @@ def perceptron(maxIter,review_list,review_label,list_word,feature_array):
 
     return w
 
-'''
-def winnow(maxIter):
+
+def winnow(maxIter,review_list,review_label,list_word,feature_array):
     w = np.ones(list_word.__len__())
     maxIter = maxIter
+    feature_list = []
 
     for iteration in range(maxIter):
         w_copy =w
         random_idx = np.random.permutation(review_list.__len__())
         for row_idx in random_idx:
             y = np.dot(w,feature_array[row_idx])
-            if y>0:
+
+            if y>w.__len__():
                 predict_label = 1
             else:
-                predict_label = -1
+                predict_label = 0
             review_l = review_label[row_idx]
-            if review_l != predict_label:
-                w = w/2.0
+            if predict_label == 0 and review_l == 1:
+                #feature_list = feature_array[row_idx].tolist()
+                indices = [i for i, x in enumerate(feature_array[row_idx]) if x == 1]
+                w[indices] *= 2.0
+            if predict_label == 1 and review_l == -1:
+                feature_list = feature_array[row_idx].tolist
+                indices = [i for i, x in enumerate(feature_array[row_idx]) if x == 1]
+                w[indices] /= 2.0
         #if np.array_equal(w_copy,w):
-        #    print("converge")
-        #    continue
+        #    print(iteration)
+        #    break
     return w
-print(winnow(10))
-'''
-def calPrecsion_p(filename,list_word,w,condition):
+#print(winnow(10))
+
+def calPrecsion_p(filename,list_word,w,condition,type):
     vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
     if condition == 1: #1 means unigram
         vfeatureArray = cal_feature_array(vreviewlist,list_word)
@@ -169,22 +177,39 @@ def calPrecsion_p(filename,list_word,w,condition):
     b=0
     turePositiveCount=0.0
     falsePositiveCount = 0.0
-    for idx in range(vreviewlist.__len__()):
-        y = np.dot(w,vfeatureArray[idx]) + b
-        if y>0:
-            predict_label = 1
-        else:
-            predict_label = -1
-        review_l = vreviewlabel[idx]
-        if predict_label == 1:
-            if review_l == 1:
-                turePositiveCount = turePositiveCount + 1
-            if review_l == -1:
-                falsePositiveCount = falsePositiveCount +1
-    precision = turePositiveCount/(turePositiveCount+falsePositiveCount) # calculate the precision
+    if type == 1: #perceptron is type 1
+        for idx in range(vreviewlist.__len__()):
+            y = np.dot(w,vfeatureArray[idx]) + b
+            if y>0:
+                predict_label = 1
+            else:
+                predict_label = -1
+            review_l = vreviewlabel[idx]
+            if predict_label == 1:
+                if review_l == 1:
+                    turePositiveCount = turePositiveCount + 1
+                if review_l == -1:
+                    falsePositiveCount = falsePositiveCount +1
+        precision = turePositiveCount/(turePositiveCount+falsePositiveCount) # calculate the precision
+    if type == 2:
+        for idx in range(vreviewlist.__len__()):
+            y = np.dot(w,vfeatureArray[idx])
+
+            if y>w.__len__():
+                predict_label = 1
+            else:
+                predict_label = 0
+            review_l = review_label[idx]
+            if predict_label == 1:
+                if review_l == 1:
+                    turePositiveCount = turePositiveCount + 1
+                if review_l == -1:
+                    falsePositiveCount = falsePositiveCount +1
+        precision = turePositiveCount/(turePositiveCount+falsePositiveCount) # calculate the precision
+
     return(precision)
 
-def calRecall_p(filename,list_word,w,condition):
+def calRecall_p(filename,list_word,w,condition,type):
     vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
     if condition == 1: #1 means unigram
         vfeatureArray = cal_feature_array(vreviewlist,list_word)
@@ -195,19 +220,36 @@ def calRecall_p(filename,list_word,w,condition):
     b=0
     turePositiveCount=0.0
     falseNegativeCount = 0.0
-    for idx in range(vreviewlist.__len__()):
-        y = np.dot(w,vfeatureArray[idx]) + b
-        if y>0:
-            predict_label = 1
-        else:
-            predict_label = -1
-        review_l = vreviewlabel[idx]
-        if review_l == 1: # if the true table is 1
-            if predict_label == 1:
-                turePositiveCount = turePositiveCount + 1
-            if predict_label == -1:
-                falseNegativeCount = falseNegativeCount +1
-    recall = turePositiveCount/(turePositiveCount+falseNegativeCount) # calculate the precision
+    if type == 1: #perceptron is type 1
+        for idx in range(vreviewlist.__len__()):
+            y = np.dot(w,vfeatureArray[idx]) + b
+            if y>0:
+                predict_label = 1
+            else:
+                predict_label = -1
+            review_l = vreviewlabel[idx]
+            if review_l == 1: # if the true table is 1
+                if predict_label == 1:
+                    turePositiveCount = turePositiveCount + 1
+                if predict_label == -1:
+                    falseNegativeCount = falseNegativeCount +1
+        recall = turePositiveCount/(turePositiveCount+falseNegativeCount) # calculate the precision
+    if type == 2:
+        for idx in range(vreviewlist.__len__()):
+            y = np.dot(w,vfeatureArray[idx])
+
+            if y>w.__len__():
+                predict_label = 1
+            else:
+                predict_label = 0
+            review_l = review_label[idx]
+            if review_l == 1: # if the true table is 1
+                if predict_label == 1:
+                    turePositiveCount = turePositiveCount + 1
+                if predict_label == 0:
+                    falseNegativeCount = falseNegativeCount +1
+        recall = turePositiveCount/(turePositiveCount+falseNegativeCount) # calculate the precision
+
     return(recall)
 
 def calFscore(precision,recall):
@@ -218,7 +260,7 @@ def predict_one_p(w,input_snippet ):
     y = np.dot(w,input_snippet) + b
     return y
 
-def calTrainError_p(filename,list_word,w,condition):
+def calTrainError_p(filename,list_word,w,condition,type):
     vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
     if condition == 1: #1 means unigram
         vfeatureArray = cal_feature_array(vreviewlist,list_word)
@@ -228,24 +270,38 @@ def calTrainError_p(filename,list_word,w,condition):
         vfeatureArray = cal_both_feature_array(vreviewlist,list_word)
     b=0
     count=0
-    for idx in range(vreviewlist.__len__()):
-        y = predict_one_p(w,vfeatureArray[idx])
-        if y>0:
-            predict_label = 1
-        else:
-            predict_label = -1
-        review_l = vreviewlabel[idx]
-        if review_l != predict_label:
-            count=count+1
+    if type == 1: #perceptron is type 1
+        for idx in range(vreviewlist.__len__()):
+            y = predict_one_p(w,vfeatureArray[idx])
+            if y>0:
+                predict_label = 1
+            else:
+                predict_label = -1
+            review_l = vreviewlabel[idx]
+            if review_l != predict_label:
+                count=count+1
+    if type == 2:
+        for idx in range(vreviewlist.__len__()):
+            y = np.dot(w,vfeatureArray[idx])
 
+            if y>w.__len__():
+                predict_label = 1
+            else:
+                predict_label = 0
+            review_l = review_label[idx]
+
+            if review_l ==0 and predict_label ==1:
+                count=count+1
+            if review_l ==1 and predict_label ==0:
+                count=count+1
     return(count)
 
-def calaprf(w,filename,review_list,review_label,list_word):
+def calaprf(w,filename,review_list,review_label,list_word,type):
 
-    print(calTrainError_p(filename,list_word,w,1))
-    precision_uni_train =calPrecsion_p(filename,list_word,w,1)
+    print(calTrainError_p(filename,list_word,w,1,type))
+    precision_uni_train =calPrecsion_p(filename,list_word,w,1,type)
     print(precision_uni_train)
-    recall_uni_train = calRecall_p(filename,list_word,w,1)
+    recall_uni_train = calRecall_p(filename,list_word,w,1,type)
     print(recall_uni_train)
     fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
     print(fscore_uni_train)
@@ -254,13 +310,21 @@ review_list,review_label = cal_reviewlistlabel('train.csv')
 #print(calListbiWord(review_list).__len__())
 
 list_uniWord = calListuniWord(review_list)
+
+w_winnow = winnow(5,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
+print(w_winnow)
+calaprf(w_winnow,'train.csv',review_list,review_label,list_uniWord,2) # type 2 is winnow
+calaprf(w_winnow,'validation.csv',review_list,review_label,list_uniWord,2)
+calaprf(w_winnow,'test.csv',review_list,review_label,list_uniWord,2)
+
+'''
 w=perceptron(100,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
 print(w)
 
 calaprf(w,'train.csv',review_list,review_label,list_uniWord)
 calaprf(w,'validation.csv',review_list,review_label,list_uniWord)
 calaprf(w,'test.csv',review_list,review_label,list_uniWord)
-
+'''
 
 '''
 print(calTrainError_p('validation.csv',list_uniWord,w10,1))
