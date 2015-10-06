@@ -62,7 +62,7 @@ def calListbiWord(review_list):
     for elements in c:
         removestr = elements
 
-        if  removestr[1]<3 or removestr[1]>100: #removestr[0] is the word removestr[1] is the count
+        if  removestr[1]<4 or removestr[1]>100: #removestr[0] is the word removestr[1] is the count
             list_word.remove(removestr[0])
 
     return list_word
@@ -158,7 +158,7 @@ def winnow(maxIter):
     return w
 print(winnow(10))
 '''
-def calTrainError(filename,list_word,w,condition):
+def calPrecsion_p(filename,list_word,w,condition):
     vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
     if condition == 1: #1 means unigram
         vfeatureArray = cal_feature_array(vreviewlist,list_word)
@@ -166,8 +166,63 @@ def calTrainError(filename,list_word,w,condition):
         vfeatureArray = cal_bifeature_array(vreviewlist,list_word)
     if condition == 3: #3 means both
         vfeatureArray = cal_both_feature_array(vreviewlist,list_word)
+    b=0
+    turePositiveCount=0.0
+    falsePositiveCount = 0.0
+    for idx in range(vreviewlist.__len__()):
+        y = np.dot(w,vfeatureArray[idx]) + b
+        if y>0:
+            predict_label = 1
+        else:
+            predict_label = -1
+        review_l = vreviewlabel[idx]
+        if predict_label == 1:
+            if review_l == 1:
+                turePositiveCount = turePositiveCount + 1
+            if review_l == -1:
+                falsePositiveCount = falsePositiveCount +1
+    precision = turePositiveCount/(turePositiveCount+falsePositiveCount) # calculate the precision
+    return(precision)
 
-    b =0
+def calRecall_p(filename,list_word,w,condition):
+    vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
+    if condition == 1: #1 means unigram
+        vfeatureArray = cal_feature_array(vreviewlist,list_word)
+    if condition == 2: #2 means bigram
+        vfeatureArray = cal_bifeature_array(vreviewlist,list_word)
+    if condition == 3: #3 means both
+        vfeatureArray = cal_both_feature_array(vreviewlist,list_word)
+    b=0
+    turePositiveCount=0.0
+    falseNegativeCount = 0.0
+    for idx in range(vreviewlist.__len__()):
+        y = np.dot(w,vfeatureArray[idx]) + b
+        if y>0:
+            predict_label = 1
+        else:
+            predict_label = -1
+        review_l = vreviewlabel[idx]
+        if review_l == 1: # if the true table is 1
+            if predict_label == 1:
+                turePositiveCount = turePositiveCount + 1
+            if predict_label == -1:
+                falseNegativeCount = falseNegativeCount +1
+    recall = turePositiveCount/(turePositiveCount+falseNegativeCount) # calculate the precision
+    return(recall)
+
+def calFscore(precision,recall):
+    return 2*(precision*recall)/(precision+recall)
+
+
+def calTrainError_p(filename,list_word,w,condition):
+    vreviewlist,vreviewlabel = cal_reviewlistlabel(filename)
+    if condition == 1: #1 means unigram
+        vfeatureArray = cal_feature_array(vreviewlist,list_word)
+    if condition == 2: #2 means bigram
+        vfeatureArray = cal_bifeature_array(vreviewlist,list_word)
+    if condition == 3: #3 means both
+        vfeatureArray = cal_both_feature_array(vreviewlist,list_word)
+    b=0
     count=0
     for idx in range(vreviewlist.__len__()):
         y = np.dot(w,vfeatureArray[idx]) + b
@@ -190,17 +245,39 @@ list_uniWord = calListuniWord(review_list)
 w10=perceptron(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
 print(w10)
 
-print(calTrainError('train.csv',list_uniWord,w10,1))
-print(calTrainError('validation.csv',list_uniWord,w10,1))
+print(calTrainError_p('train.csv',list_uniWord,w10,1))
+print(calTrainError_p('validation.csv',list_uniWord,w10,1))
+print(calTrainError_p('test.csv',list_uniWord,w10,1))
 
+precision_uni_train =calPrecsion_p('train.csv',list_uniWord,w10,1)
+print(precision_uni_train)
+recall_uni_train = calRecall_p('train.csv',list_uniWord,w10,1)
+print(recall_uni_train)
+fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
+print(fscore_uni_train)
+
+precision_uni_v =calPrecsion_p('validation.csv',list_uniWord,w10,1)
+print(precision_uni_v)
+recall_uni_v = calRecall_p('validation.csv',list_uniWord,w10,1)
+print(recall_uni_v)
+fscore_uni_v = calFscore(precision_uni_v,recall_uni_v)
+print(fscore_uni_v)
+
+precision_uni_v =calPrecsion_p('test.csv',list_uniWord,w10,1)
+print(precision_uni_v)
+recall_uni_v = calRecall_p('test.csv',list_uniWord,w10,1)
+print(recall_uni_v)
+fscore_uni_v = calFscore(precision_uni_v,recall_uni_v)
+print(fscore_uni_v)
+'''
 list_biWord = calListbiWord(review_list)
 #print(list_biWord)
 
 w_bi_10 = perceptron(10,review_list,review_label,list_biWord,cal_bifeature_array(review_list,list_biWord))
 print(w_bi_10)
 
-print(calTrainError('train.csv',list_biWord,w_bi_10,2))
-print(calTrainError('validation.csv',list_biWord,w_bi_10,2))
+print(calTrainError_p('train.csv',list_biWord,w_bi_10,2))
+print(calTrainError_p('validation.csv',list_biWord,w_bi_10,2))
 list_bothWord = []
 list_bothWord = list_uniWord + list_biWord
 
@@ -208,5 +285,6 @@ bothfeatureArray = cal_both_feature_array(review_list,list_bothWord)
 w_both = perceptron(10,review_list,review_label,list_bothWord,bothfeatureArray)
 print(w_both.__len__())
 print(w_both)
-print(calTrainError('train.csv',list_bothWord,w_both,3))
-print(calTrainError('validation.csv',list_bothWord,w_both,3))
+print(calTrainError_p('train.csv',list_bothWord,w_both,3))
+print(calTrainError_p('validation.csv',list_bothWord,w_both,3))
+'''
