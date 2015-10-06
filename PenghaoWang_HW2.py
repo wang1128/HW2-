@@ -237,25 +237,24 @@ def calTrainError_p(filename,list_word,w,condition):
     return(count)
 
 review_list,review_label = cal_reviewlistlabel('train.csv')
-print(review_list[0])
+
 #print(calListbiWord(review_list).__len__())
 
 list_uniWord = calListuniWord(review_list)
-#feature_array = cal_feature_array(review_list,list_uniWord)
-w10=perceptron(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
-print(w10)
+def calaprf(maxIter,filename,review_list,review_label,list_word):
+    w=perceptron(maxIter,review_list,review_label,list_word,cal_feature_array(review_list,list_word))
+    print(w)
+    print(calTrainError_p(filename,list_word,w,1))
+    precision_uni_train =calPrecsion_p(filename,list_word,w,1)
+    print(precision_uni_train)
+    recall_uni_train = calRecall_p(filename,list_word,w,1)
+    print(recall_uni_train)
+    fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
+    print(fscore_uni_train)
 
-print(calTrainError_p('train.csv',list_uniWord,w10,1))
+'''
 print(calTrainError_p('validation.csv',list_uniWord,w10,1))
 print(calTrainError_p('test.csv',list_uniWord,w10,1))
-
-precision_uni_train =calPrecsion_p('train.csv',list_uniWord,w10,1)
-print(precision_uni_train)
-recall_uni_train = calRecall_p('train.csv',list_uniWord,w10,1)
-print(recall_uni_train)
-fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
-print(fscore_uni_train)
-
 precision_uni_v =calPrecsion_p('validation.csv',list_uniWord,w10,1)
 print(precision_uni_v)
 recall_uni_v = calRecall_p('validation.csv',list_uniWord,w10,1)
@@ -269,7 +268,8 @@ recall_uni_v = calRecall_p('test.csv',list_uniWord,w10,1)
 print(recall_uni_v)
 fscore_uni_v = calFscore(precision_uni_v,recall_uni_v)
 print(fscore_uni_v)
-'''
+
+
 list_biWord = calListbiWord(review_list)
 #print(list_biWord)
 
