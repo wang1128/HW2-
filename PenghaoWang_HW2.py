@@ -290,7 +290,7 @@ def calTrainError_p(filename,list_word,w,condition,type):
                 predict_label = 0
             review_l = review_label[idx]
 
-            if review_l ==0 and predict_label ==1:
+            if review_l ==-1 and predict_label ==1:
                 count=count+1
             if review_l ==1 and predict_label ==0:
                 count=count+1
@@ -305,13 +305,14 @@ def calaprf(w,filename,review_list,review_label,list_word,type):
     print(recall_uni_train)
     fscore_uni_train = calFscore(precision_uni_train,recall_uni_train)
     print(fscore_uni_train)
+
 review_list,review_label = cal_reviewlistlabel('train.csv')
 
 #print(calListbiWord(review_list).__len__())
 
 list_uniWord = calListuniWord(review_list)
 
-w_winnow = winnow(5,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
+w_winnow = winnow(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord))
 print(w_winnow)
 calaprf(w_winnow,'train.csv',review_list,review_label,list_uniWord,2) # type 2 is winnow
 calaprf(w_winnow,'validation.csv',review_list,review_label,list_uniWord,2)
