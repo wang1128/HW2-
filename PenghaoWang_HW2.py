@@ -313,6 +313,7 @@ list_biWord = calListbiWord(review_list)
 list_bothWord = []
 list_bothWord = list_uniWord + list_biWord
 # the first parameter is maxIter
+# When run the program, it will print the w and all accuracy, precision, recall, and fscore of each file
 w = perceptron(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord)) #cal_feature_array is for unigram only
 
 print(w)
@@ -323,7 +324,7 @@ print ("test")
 calaprf(w,'test.csv',list_uniWord,1,1)
 
 
-w = perceptron(10,review_list,review_label,list_biWord,cal_bifeature_array(review_list,list_biWord))
+w = perceptron(40,review_list,review_label,list_biWord,cal_bifeature_array(review_list,list_biWord))
 print("bigram")
 print(w)
 calaprf(w,'train.csv',list_biWord,2,1) # first one is condition, condition 2 is for bigram. type 1 is perceptron
@@ -332,8 +333,8 @@ calaprf(w,'validation.csv',list_biWord,2,1)
 print ("test")
 calaprf(w,'test.csv',list_biWord,2,1)
 
-w = perceptron(10,review_list,review_label,list_bothWord,cal_both_feature_array(review_list,list_bothWord))
-print("bigram")
+w = perceptron(30,review_list,review_label,list_bothWord,cal_both_feature_array(review_list,list_bothWord))
+print("both")
 print(w)
 calaprf(w,'train.csv',list_bothWord,3,1) # first one is condition, condition 3 is for both unigram and bigram. type 1 is perceptron
 print("validation")
@@ -341,7 +342,7 @@ calaprf(w,'validation.csv',list_bothWord,3,1)
 print ("test")
 calaprf(w,'test.csv',list_bothWord,3,1)
 
-'''
+
 w_winnow = winnow(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord)) #cal_feature_array is for unigram only
 
 print(w)
@@ -350,4 +351,3 @@ print("validation")
 calaprf(w_winnow,'validation.csv',list_uniWord,1,2)
 print ("test")
 calaprf(w_winnow,'test.csv',list_uniWord,1,2)
-'''
