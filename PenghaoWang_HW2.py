@@ -345,7 +345,7 @@ calaprf(w,'test.csv',list_bothWord,3,1)
 
 w_winnow = winnow(10,review_list,review_label,list_uniWord,cal_feature_array(review_list,list_uniWord)) #cal_feature_array is for unigram only
 
-print(w)
+
 calaprf(w_winnow,'train.csv',list_uniWord,1,2) # first is condition, condition 1 is for unigram. type 2 is winnow
 print("validation")
 calaprf(w_winnow,'validation.csv',list_uniWord,1,2)
