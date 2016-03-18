@@ -1,4 +1,7 @@
 # HW2-
+Two online learning algorithms are implemented, the Perceptron algorithm and the Winnow algorithm. The observation of their performances in practice by running the algorithms over the movie review datasets. In the dataset, each line corresponds to a single snippet
+which comes from a movie review and is labeled with either a positive or negative sign. The program learns the weights using a language model and then predict whether a given snippet is positive or negative. The dataset is split into training, validation, and test sets. The program uses the training set for learning weigh
+
 All right reserved
 - The numpy and csv function are imported. Numpy is used to calculate the perceptron and winnow algorithm.
 
